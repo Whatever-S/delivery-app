@@ -9,16 +9,11 @@ const userSchema = new mongoose.Schema({
     numberOfArticles: { type: Number, default: 0 },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
-});
-
-userSchema.virtual('fullName').get(function () {
-    return this.firstName + ' ' + this.lastName;
+    fullName: {type: String}
 });
 
 userSchema.pre('save', function(next) {
-    if (this.isModified()) {
-        this.updatedAt = Date.now();
-    }
+    this.fullName =  this.firstName + ' ' + this.lastName;
     next();
 });
 const User = mongoose.model('User', userSchema);

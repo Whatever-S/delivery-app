@@ -5,14 +5,14 @@ export const getUsers = async (req, res, next) => {
   try {
     const { sort } = req.query;
 
-    const query = User.find({}, 'email age')
-      .select('firstName lastName')
+    const query = User.find({}, 'email age fullName')
+      .select('fullName')
       .sort(sort === 'age' ? { age: 1 } : null)
       .lean();
 
     const users = await query.exec();
     const transformedUsers = users.map(user => ({
-      fullName: user.firstName + ' ' + user.lastName,
+      fullName: user.fullName,
       email: user.email,
       age: user.age
     }));
@@ -29,7 +29,7 @@ export const getUserByIdWithArticles = async (req, res, next) => {
   try {
     const  userId  = req.params.id.slice(1);
     const user = await User.findById(userId,
-      {_id: 0, firstName: 1, numberOfArticles: 1}); // MAKE FULLNAME
+      {_id: 0, fullName: 1, numberOfArticles: 1}); 
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
@@ -75,7 +75,7 @@ export const updateUserById = async (req, res, next) => {
 
     const updatedUser = await User.findByIdAndUpdate(
       userId,
-      { firstName, lastName, age },
+      { firstName, lastName, age ,  updatedAt: new Date()},
       { new: true }
     );
 
